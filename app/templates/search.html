@@ -1,0 +1,69 @@
+<!-- app/templates/search.html -->
+{% extends "base.html" %}
+
+{% block title %}Search Students{% endblock %}
+
+{% block content %}
+<div class="search-header">
+    <h1>Search Students</h1>
+    <p>Find student records by name</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="{{ url_for('main.search') }}" method="get">
+                    <div class="input-group mb-3">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            name="query" 
+                            placeholder="Search by student name..." 
+                            value="{{ query }}"
+                            autocomplete="off">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+                
+                <div id="search-results">
+                    {% if students %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Section</th>
+                                        <th>Roll No</th>
+                                        <th>Father's Name</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr>
+                                        <td>{{ student.Name }}</td>
+                                        <td>{{ student.Class }}</td>
+                                        <td>{{ student.Section }}</td>
+                                        <td>{{ student["Roll No"] }}</td>
+                                        <td>{{ student["Father's Name"] }}</td>
+                                        <td>
+                                            <a href="{{ url_for('main.student_details', student_id=student._id) }}" class="btn btn-sm btn-primary">View Details</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% elif query %}
+                        <div class="alert alert-info">No students found matching your search criteria.</div>
+                    {% else %}
+                        <div class="alert alert-secondary">Enter a student name to search.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

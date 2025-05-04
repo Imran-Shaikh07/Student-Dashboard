@@ -1,0 +1,146 @@
+<!-- app/templates/dashboard.html -->
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Student Performance Dashboard</h1>
+    <p>Interactive visualization of student data</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h5>Class Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="classDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h5>Subject Performance</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="subjectAveragesChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Recent Students</h5>
+                <a href="{{ url_for('main.search') }}" class="btn btn-primary btn-sm">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Roll No</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.Name }}</td>
+                                <td>{{ student.Class }}</td>
+                                <td>{{ student.Section }}</td>
+                                <td>{{ student["Roll No"] }}</td>
+                                <td>
+                                    <a href="{{ url_for('main.student_details', student_id=student._id) }}" class="btn btn-sm btn-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Chart data from Flask
+    const chartData = {{ chart_data|tojson }};
+    
+    // Class Distribution Chart
+    const classCtx = document.getElementById('classDistributionChart').getContext('2d');
+    new Chart(classCtx, {
+        type: 'pie',
+        data: {
+            labels: chartData.class_distribution.labels,
+            datasets: [{
+                data: chartData.class_distribution.data,
+                backgroundColor: [
+                    'rgba(24, 119, 242, 0.9)',
+                    'rgba(24, 119, 242, 0.7)',
+                    'rgba(24, 119, 242, 0.5)',
+                    'rgba(24, 119, 242, 0.3)',
+                    'rgba(110, 170, 242, 0.8)',
+                    'rgba(110, 170, 242, 0.6)'
+                ],
+                borderColor: '#1877F2',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: 'Students per Class'
+                }
+            }
+        }
+    });
+    
+    // Subject Averages Chart
+    const subjectCtx = document.getElementById('subjectAveragesChart').getContext('2d');
+    new Chart(subjectCtx, {
+        type: 'bar',
+        data: {
+            labels: chartData.subject_averages.labels,
+            datasets: [{
+                label: 'Average Marks',
+                data: chartData.subject_averages.data,
+                backgroundColor: 'rgba(24, 119, 242, 0.7)',
+                borderColor: '#1877F2',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Average Subject Performance'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

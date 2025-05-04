@@ -1,0 +1,165 @@
+<!-- app/templates/student_details.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ student.Name }} - Student Details{% endblock %}
+
+{% block content %}
+<div class="student-header">
+    <h1>{{ student.Name }}</h1>
+    <p>Student Profile</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Student Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <th width="40%">Name:</th>
+                            <td>{{ student.Name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Class:</th>
+                            <td>{{ student.Class }}</td>
+                        </tr>
+                        <tr>
+                            <th>Section:</th>
+                            <td>{{ student.Section }}</td>
+                        </tr>
+                        <tr>
+                            <th>Roll Number:</th>
+                            <td>{{ student["Roll No"] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Father's Name:</th>
+                            <td>{{ student["Father's Name"] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Parents' Number:</th>
+                            <td>{{ student["Parents Number"] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Language:</th>
+                            <td>{{ student.Language }}</td>
+                        </tr>
+                        <tr>
+                            <th>Learner Type:</th>
+                            <td>{{ student["Learner Type"] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Academic Performance</h5>
+            </div>
+            <div class="card-body" style="height: 300px;">
+                <canvas id="studentMarksChart"></canvas>
+            </div>
+            <div class="card-footer">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Math</td>
+                            <td>{{ student["Math Marks"] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Science</td>
+                            <td>{{ student["Science Marks"] }}</td>
+                        </tr>
+                        <tr>
+                            <td>English</td>
+                            <td>{{ student["English Marks"] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Social Studies</td>
+                            <td>{{ student["Social Studies Marks"] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Telugu</td>
+                            <td>{{ student["Telugu Marks"] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Student marks chart
+    document.addEventListener('DOMContentLoaded', function() {
+        const subjects = {{ subjects|tojson }};
+        const marks = {{ marks|tojson }};
+        
+        const marksCtx = document.getElementById('studentMarksChart').getContext('2d');
+        new Chart(marksCtx, {
+            type: 'radar',
+            data: {
+                labels: subjects,
+                datasets: [{
+                    label: 'Marks',
+                    data: marks,
+                    backgroundColor: 'rgba(24, 119, 242, 0.2)',
+                    borderColor: '#1877F2',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#1877F2',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#1877F2'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Subject-wise Performance'
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
